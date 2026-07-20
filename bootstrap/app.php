@@ -1,14 +1,15 @@
 <?php
 
+use App\Exceptions\WeatherServiceException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -26,25 +27,24 @@ return Application::configure(basePath: dirname(__DIR__))
         );
 
         $exceptions->render(function (ValidationException $e, Request $request) {
+            $errors = collect($e->errors())->map(function ($messages, $field) {
+                return [
+                    'field' => $field,
+                    'message' => $messages[0],
+                ];
+            })->values();
+
             return response()->json([
                 'error' => 'VALIDATION_ERROR',
-                'message' => $e->getMessage(),
-                'additional_information' => '',
+                'message' => 'Please check your request',
+                'additional_information' => $errors,
             ], 422);
-        });
-
-        $exceptions->render(function (RouteNotFoundException $e, Request $request) {
-            return response()->json([
-                'error' => 'NOT_FOUND',
-                'message' => 'Route not found',
-                'additional_information' => null,
-            ], 404);
         });
 
         $exceptions->render(function (NotFoundHttpException $e, Request $request) {
             return response()->json([
                 'error' => 'NOT_FOUND',
-                'message' => 'Data tidak ditemukan',
+                'message' => 'Data or route not found',
                 'additional_information' => null,
             ], 404);
         });
@@ -52,9 +52,25 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (AuthenticationException $e, Request $request) {
             return response()->json([
                 'error' => 'UNAUTHENTICATED',
-                'message' => 'Anda belum login',
+                'message' => 'You must logged in first',
                 'additional_information' => null,
             ], 401);
+        });
+
+        $exceptions->render(function (AccessDeniedHttpException $e, Request $request) {
+            return response()->json([
+                'error' => 'UNAUTHENTICATED',
+                'message' => "You don't have permission to this data",
+                'additional_information' => null,
+            ], 403);
+        });
+
+        $exceptions->render(function (WeatherServiceException $e, Request $request) {
+            return response()->json([
+                'error' => 'WEATHER_EXCEPTION',
+                'message' => $e->getMessage(),
+                'additional_information' => null,
+            ], 403);
         });
 
         $exceptions->render(function (Throwable $e, Request $request) {

@@ -12,7 +12,7 @@ class WeatherApiClient
             ->retry(3, 100)
             ->get('http://api.weatherapi.com/v1/current.json', [
                 'q' => $city,
-                'key' => '6d57c4a9178b4fcd8aa121645262007',
+                'key' => config('app.weather_api.key'),
                 'aqi' => 'no',
             ]);
 
