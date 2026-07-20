@@ -1,58 +1,175 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Juicebox
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+RESTful API dibangun pakai Laravel — fitur Posts, Users (auth pakai Sanctum), dan Weather (integrasi eksternal API + caching + scheduled job).
 
-## About Laravel
+## Tech Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Laravel 13.8
+- PHP ^8.3
+- MySQL
+- Laravel Sanctum (API authentication)
+- Queue (welcome email job)
+- Weather API: [WeatherAPI.com](https://www.weatherapi.com/)
+- Mail testing: [Mailtrap](https://mailtrap.io/)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Fitur
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Auth (register, login, logout) pakai Laravel Sanctum
+- CRUD Posts (relasi `Post belongsTo User`)
+- List & detail Users
+- Weather endpoint (data cuaca kota Perth, Australia), dengan caching 15 menit
+- Background job update data weather tiap jam (via scheduler)
+- Queued job kirim welcome email saat user register
+- Artisan command buat manual dispatch welcome email job
+- Request validation seragam (known & unknown error) + HTTP status code sesuai
+- Testing (PHPUnit) untuk Posts, Users, dan Weather (pakai `Http::fake`)
 
-## Learning Laravel
+## Setup
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### 1. Clone & Install
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/fiandimas/juicebox.git
+cd juicebox
+composer install
+cp .env.example .env
+php artisan key:generate
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Konfigurasi `.env`
 
-## Contributing
+Sesuaikan variable berikut di file `.env`:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=xxx
+DB_PORT=xxx
+DB_DATABASE=xxx
+DB_USERNAME=xxx
+DB_PASSWORD=xxx
 
-## Code of Conduct
+MAIL_MAILER=smtp
+MAIL_SCHEME=null
+MAIL_HOST=xxx
+MAIL_PORT=xxx
+MAIL_USERNAME=xxx
+MAIL_PASSWORD=xxx
+MAIL_FROM_ADDRESS=xxx
+MAIL_FROM_NAME=xxx
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+WEATHER_API_KEY=xxx
+```
 
-## Security Vulnerabilities
+### 3. Migrate Database
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan migrate
+```
 
-## License
+### 4. Jalankan Server
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+php artisan serve
+```
+
+## Setup Weather API (WeatherAPI.com)
+
+Endpoint weather di project ini mengambil data cuaca kota **Perth, Australia** dari [WeatherAPI.com](https://www.weatherapi.com/), dengan caching selama 15 menit untuk minimalisir API call.
+
+Cara dapetin API key:
+
+1. Register akun pakai email di [weatherapi.com](https://www.weatherapi.com/)
+2. Verifikasi email
+3. Copy `API Key` yang muncul di dashboard
+4. Paste ke `.env`:
+
+```dotenv
+WEATHER_API_KEY=
+```
+
+Setelah itu langsung bisa dipakai, tidak perlu konfigurasi tambahan.
+
+## Setup Email (Mailtrap)
+
+Untuk testing pengiriman welcome email, project ini pakai [Mailtrap](https://mailtrap.io/) (sandbox SMTP, gratis).
+
+Cara setup:
+
+1. Register akun pakai Gmail/GitHub di [mailtrap.io](https://mailtrap.io/)
+2. Buka sidebar → menu **Sandboxes**
+3. Buat sandbox baru
+4. Copy credential SMTP yang disediakan (host, port, username, password)
+5. Paste ke bagian `MAIL_*` di `.env`
+
+> **Catatan:** karena pakai Mailtrap **Sandbox**, email tidak benar-benar terkirim ke inbox asli penerima. Semua email yang dikirim akan ketampung di inbox sandbox Mailtrap (menu **Sandboxes** → project sandbox yang dibuat), jadi aman dipakai buat testing tanpa nyampah ke email asli user.
+
+## Queue Worker
+
+Welcome email dikirim lewat queued job. Jalankan queue worker dengan:
+
+```bash
+php artisan queue:work
+```
+
+## Weather Update Job (Scheduler)
+
+Data weather di-refresh otomatis setiap jam lewat Laravel Scheduler. Supaya jalan, tambahkan cron entry berikut di server:
+
+```bash
+* * * * * cd /path-to-project && php artisan schedule:run >> /dev/null 2>&1
+```
+
+## Manual Dispatch Welcome Email (Artisan Command)
+
+Untuk testing/dispatch manual welcome email job:
+
+```bash
+php artisan app:welcome-email {email}
+```
+
+> Email yang dipakai harus sudah terdaftar (ada) di database, kalau tidak ketemu command akan menampilkan pesan `User is not found`.
+
+## API Endpoints
+
+### Auth
+
+| Method | Endpoint | Keterangan |
+|---|---|---|
+| POST | `/api/register` | Register user baru |
+| POST | `/api/login` | Login user |
+| POST | `/api/logout` | Logout user (auth required) |
+
+### Posts (auth required)
+
+| Method | Endpoint | Keterangan |
+|---|---|---|
+| GET | `/api/posts` | List semua post (pagination) |
+| GET | `/api/posts/{id}` | Detail post |
+| POST | `/api/posts` | Buat post baru |
+| PATCH | `/api/posts/{id}` | Update post |
+| DELETE | `/api/posts/{id}` | Hapus post |
+
+### Users (auth required)
+
+| Method | Endpoint | Keterangan |
+|---|---|---|
+| GET | `/api/users` | List semua user (pagination) |
+| GET | `/api/users/{id}` | Detail user |
+
+### Weather (auth required)
+
+| Method | Endpoint | Keterangan |
+|---|---|---|
+| GET | `/api/weathers` | Data cuaca terkini kota Perth (cache 15 menit) |
+
+## Testing
+
+```bash
+php artisan test
+```
+
+Test coverage meliputi:
+
+- `PostTest` — create post (authenticated & guest), validasi data invalid, list post
+- `UserTest` — register (valid & duplicate email), login (benar & salah password)
+- `WeatherTest` — ambil data weather dari API, data yang sudah di-cache tidak manggil API lagi, handling saat external API gagal (pakai `Http::fake`)
