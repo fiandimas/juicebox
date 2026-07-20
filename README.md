@@ -129,6 +129,19 @@ php artisan app:welcome-email {email}
 
 > Email yang dipakai harus sudah terdaftar (ada) di database, kalau tidak ketemu command akan menampilkan pesan `User is not found`.
 
+## Dokumentasi API
+
+Dokumentasi API lengkap (request & response tiap endpoint) tersedia dalam bentuk Postman Collection: **`Juicebox - Alfian Dimas Sugara.postman_collection.json`** (ada di root repo).
+
+Cara pakai:
+
+1. Buka Postman
+2. Import file `Juicebox - Alfian Dimas Sugara.postman_collection.json`
+3. Jalankan `php artisan serve` biar base URL `http://localhost:8000` aktif
+4. Mulai dari request **Auth > Register** atau **Auth > Login** buat dapetin token, lalu pasang token itu di header `Authorization: Bearer {token}` untuk request yang butuh auth (Posts, Users, Weather)
+
+Collection ini juga sudah menyertakan contoh response asli (saved response) untuk tiap endpoint.
+
 ## API Endpoints
 
 ### Auth
@@ -160,7 +173,7 @@ php artisan app:welcome-email {email}
 
 | Method | Endpoint | Keterangan |
 |---|---|---|
-| GET | `/api/weather` | Data cuaca terkini kota Perth (cache 15 menit) |
+| GET | `/api/weathers` | Data cuaca terkini kota Perth (cache 15 menit) |
 
 ## Testing
 
