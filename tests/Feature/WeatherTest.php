@@ -23,7 +23,7 @@ class WeatherTest extends TestCase
         $user = User::factory()->create();
         Sanctum::actingAs($user);
 
-        $response = $this->getJson('/api/weathers');
+        $response = $this->getJson('/api/weather');
 
         $response->assertOk()
             ->assertJsonPath('data.location.name', 'Perth');
@@ -47,7 +47,7 @@ class WeatherTest extends TestCase
         $user = User::factory()->create();
         Sanctum::actingAs($user);
 
-        $response = $this->getJson('/api/weathers');
+        $response = $this->getJson('/api/weather');
 
         $response->assertOk()
             ->assertJsonPath('data.location.name', 'Perth');
@@ -64,7 +64,7 @@ class WeatherTest extends TestCase
         $user = User::factory()->create();
         Sanctum::actingAs($user);
 
-        $response = $this->getJson('/api/weathers');
+        $response = $this->getJson('/api/weather');
 
         $response->assertStatus(400);
     }

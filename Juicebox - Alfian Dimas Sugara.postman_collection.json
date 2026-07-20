@@ -904,7 +904,7 @@
           }
         ],
         "url": {
-          "raw": "http://localhost:8000/api/weathers",
+          "raw": "http://localhost:8000/api/weather",
           "protocol": "http",
           "host": [
             "localhost"
@@ -929,7 +929,7 @@
               }
             ],
             "url": {
-              "raw": "http://localhost:8000/api/weathers",
+              "raw": "http://localhost:8000/api/weather",
               "protocol": "http",
               "host": [
                 "localhost"

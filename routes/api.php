@@ -27,4 +27,4 @@ Route::prefix('users')->middleware('auth:sanctum')->group(function () {
 });
 
 // Weather
-Route::middleware('auth:sanctum')->get('/weathers', [WeatherController::class, 'index']);
+Route::middleware('auth:sanctum')->get('/weather', [WeatherController::class, 'index']);

@@ -160,7 +160,7 @@ php artisan app:welcome-email {email}
 
 | Method | Endpoint | Keterangan |
 |---|---|---|
-| GET | `/api/weathers` | Data cuaca terkini kota Perth (cache 15 menit) |
+| GET | `/api/weather` | Data cuaca terkini kota Perth (cache 15 menit) |
 
 ## Testing
 
