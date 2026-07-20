@@ -70,7 +70,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 'error' => 'WEATHER_EXCEPTION',
                 'message' => $e->getMessage(),
                 'additional_information' => null,
-            ], 403);
+            ], 400);
         });
 
         $exceptions->render(function (Throwable $e, Request $request) {
