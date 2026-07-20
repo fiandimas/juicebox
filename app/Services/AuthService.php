@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\DTOs\Auth\LoginDTO;
 use App\DTOs\Auth\RegisterDTO;
+use App\Jobs\SendWelcomeEmail;
 use App\Models\User;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use Illuminate\Support\Facades\Hash;
@@ -23,7 +24,7 @@ class AuthService
 
         if (is_null($user) || !Hash::check($credentials['password'], $user->password)) {
             throw ValidationException::withMessages([
-                'email' => ['Email atau password salah.'],
+                'email' => ['Email or password is incorrect'],
             ]);
         }
 
@@ -37,6 +38,10 @@ class AuthService
 
     public function register(RegisterDTO $dto): User
     {
-        return $this->userRepository->create($dto->toArray());
+        $user = $this->userRepository->create($dto->toArray());
+
+        SendWelcomeEmail::dispatch($user);
+
+        return $user;
     }
 }

@@ -19,7 +19,6 @@ class PostController extends Controller
         private readonly PostService $postService
     ) { }
 
-    #[Authorize('view', 'post')]
     public function index(Request $request)
     {
         $dto = PaginationPostDTO::fromRequest($request);
@@ -28,7 +27,6 @@ class PostController extends Controller
         return PostResource::collection($posts);
     }
 
-    #[Authorize('create', 'post')]
     public function store(StorePostRequest $request)
     {
         $dto = StorePostDTO::fromRequest($request);

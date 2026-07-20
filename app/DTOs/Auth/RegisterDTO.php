@@ -18,7 +18,7 @@ class RegisterDTO
 
         return new self(
             name: $validated['name'],
-            email: $validated['title'],
+            email: $validated['email'],
             password: $validated['password'],
         );
     }

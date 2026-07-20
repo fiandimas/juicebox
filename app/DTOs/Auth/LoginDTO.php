@@ -16,7 +16,7 @@ class LoginDTO
         $validated = $request->validated();
 
         return new self(
-            email: $validated['title'],
+            email: $validated['email'],
             password: $validated['password'],
         );
     }
