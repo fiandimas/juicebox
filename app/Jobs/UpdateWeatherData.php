@@ -25,7 +25,6 @@ class UpdateWeatherData implements ShouldQueue
 
             Cache::put($keyCache, $weather, now()->addMinutes(15));
         } catch (Exception $e) {
-            throw new Exception('MASOKK');
         }
     }
 }

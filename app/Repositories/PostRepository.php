@@ -17,8 +17,8 @@ class PostRepository implements PostRepositoryInterface
     {
         return Post::with('user')
             ->where('user_id', $filters['user_id'])
-            ->when(isset($filters['title']),    fn ($q) => $q->where('title', 'LIKE', '%'. $filters['title'] .'%'))
-            ->when(isset($filters['content']),  fn ($q) => $q->where('content', 'LIKE', '%'. $filters['content'] .'%'))
+            ->when(filled($filters['title']),    fn ($q) => $q->where('title', 'LIKE', '%'. $filters['title'] .'%'))
+            ->when(filled($filters['content']),  fn ($q) => $q->where('content', 'LIKE', '%'. $filters['content'] .'%'))
             ->latest()
             ->paginate(15);
     }

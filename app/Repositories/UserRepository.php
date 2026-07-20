@@ -16,9 +16,9 @@ class UserRepository implements UserRepositoryInterface
     public function paginate(array $filters = []): LengthAwarePaginator
     {
         return User::withCount('posts')
-            ->when(isset($filters['id']),       fn ($q) => $q->where('id', 'LIKE', $filters['id']))
-            ->when(isset($filters['email']),    fn ($q) => $q->where('email', 'LIKE', '%'. $filters['email'] .'%'))
-            ->when(isset($filters['name']),     fn ($q) => $q->where('name', 'LIKE', '%'. $filters['name'] .'%'))
+            ->when(filled($filters['id']),       fn ($q) => $q->where('id', $filters['id']))
+            ->when(filled($filters['email']),    fn ($q) => $q->where('email', 'LIKE', '%'. $filters['email'] .'%'))
+            ->when(filled($filters['name']),     fn ($q) => $q->where('name', 'LIKE', '%'. $filters['name'] .'%'))
             ->latest()
             ->paginate(15);
     }
