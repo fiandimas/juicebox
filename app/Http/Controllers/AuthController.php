@@ -7,6 +7,7 @@ use App\DTOs\Auth\RegisterDTO;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Services\AuthService;
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
@@ -25,5 +26,12 @@ class AuthController extends Controller
         $dto = RegisterDTO::fromRequest($request);
 
         return $this->authService->register($dto);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->tokens()->delete();
+
+        return response()->noContent();
     }
 }
