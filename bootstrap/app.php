@@ -5,6 +5,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -63,6 +64,14 @@ return Application::configure(basePath: dirname(__DIR__))
                 'message' => "You don't have permission to this data",
                 'additional_information' => null,
             ], 403);
+        });
+
+        $exceptions->render(function (ThrottleRequestsException $e, Request $request) {
+            return response()->json([
+                'error' => 'TOO_MANY_REQUEST',
+                'message' => 'Too Many Attempts. Try again in several minutes',
+                'additional_information' => null,
+            ], 429);
         });
 
         $exceptions->render(function (WeatherServiceException $e, Request $request) {

@@ -32,10 +32,9 @@ class PostController extends Controller
         $dto = StorePostDTO::fromRequest($request);
         $user = $this->postService->create($dto);
 
-        return response(new PostResource($user), 201);
+        return response(new PostResource($user->load('user')), 201);
     }
 
-    #[Authorize('view', 'post')]
     public function show(Post $post)
     {
         return new PostResource($post->load('user'));

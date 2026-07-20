@@ -16,7 +16,6 @@ class PostRepository implements PostRepositoryInterface
     public function paginate(array $filters = []): LengthAwarePaginator
     {
         return Post::with('user')
-            ->where('user_id', $filters['user_id'])
             ->when(filled($filters['title']),    fn ($q) => $q->where('title', 'LIKE', '%'. $filters['title'] .'%'))
             ->when(filled($filters['content']),  fn ($q) => $q->where('content', 'LIKE', '%'. $filters['content'] .'%'))
             ->latest()

@@ -7,8 +7,8 @@ use App\Http\Controllers\WeatherController;
 use Illuminate\Support\Facades\Route;
 
 // Auth
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/register', [AuthController::class, 'register']);
+Route::middleware('throttle:5,10')->post('/login', [AuthController::class, 'login']);
+Route::middleware('throttle:5,10')->post('/register', [AuthController::class, 'register']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 
 // Post

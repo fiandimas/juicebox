@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Support\CacheKey;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Laravel\Sanctum\Sanctum;
@@ -11,6 +12,8 @@ use Tests\TestCase;
 
 class WeatherTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_returns_weather_data_from_api(): void
     {
         Http::fake([
